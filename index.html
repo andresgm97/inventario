@@ -996,7 +996,7 @@
       var item = modal.tipo === 'editar' ? state.items.find(function (i) { return i.id === modal.itemId; }) : null;
       var d = item || { nombre: '', categoria: 'medicacion', presentacion: '', unidad: 'unidades', stock: 0, stockMinimo: 0, lote: '', caducidad: '', ubicacion: '', notas: '' };
       return (
-        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal-backdrop">' +
         '<div class="modal" onclick="event.stopPropagation()">' +
         '<h2>' + (item ? 'Editar producto' : 'Nuevo producto') + '</h2>' +
         '<form class="form-grid" onsubmit="return App.guardarFormulario(event)">' +
@@ -1028,7 +1028,7 @@
       var cantidad = modal.cantidad != null ? modal.cantidad : 1;
       var resultante = modoActual === 'retirar' ? itemAj.stock - cantidad : itemAj.stock + cantidad;
       return (
-        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal-backdrop">' +
         '<div class="modal modal-narrow" onclick="event.stopPropagation()">' +
         '<h2>Ajustar stock</h2>' +
         '<p class="modal-subtitle">' + escapeHtml(itemAj.nombre) + ' · stock actual: <strong>' + itemAj.stock + '</strong> ' + escapeHtml(itemAj.unidad) + '</p>' +
@@ -1051,7 +1051,7 @@
       var itemEl = state.items.find(function (i) { return i.id === modal.itemId; });
       if (!itemEl) return '';
       return (
-        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal-backdrop">' +
         '<div class="modal modal-narrow" onclick="event.stopPropagation()">' +
         '<h2>Eliminar producto</h2>' +
         '<p class="modal-subtitle">¿Seguro que quieres eliminar "' + escapeHtml(itemEl.nombre) + '" del inventario? Esta acción no se puede deshacer.</p>' +
