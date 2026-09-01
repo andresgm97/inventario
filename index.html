@@ -139,6 +139,8 @@
   .brand-logo .logo-word { fill: #4c4c4c; }
   .brand-logo .logo-cutout { fill: #ffffff; }
 
+  .brand-text-block { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
   .brand-product {
     font-size: 12.5px;
     font-weight: 600;
@@ -484,6 +486,114 @@
     .summary-cards { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
   }
+
+  /* ---------- selector de sala ---------- */
+
+  .sala-shell {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 64px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .sala-shell .brand-logo-plate { margin-bottom: 28px; }
+
+  .sala-shell h1 {
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  .sala-shell .sala-subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 40px;
+  }
+
+  .sala-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .sala-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  }
+
+  .sala-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sala-card:active { transform: translateY(1px); }
+
+  .sala-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .sala-card h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .sala-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .sala-card-count {
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .cambiar-sala {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cambiar-sala:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .sala-grid { grid-template-columns: 1fr; }
+    .sala-shell { padding: 40px 20px; }
+  }
 </style>
 </head>
 <body>
@@ -492,8 +602,29 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'inventario-urgencias-arcelormittal-v1';
   var DIAS_AVISO = 30;
+
+  var ICON_URGENCIAS = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 13h4l2-7 4 14 2-7h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_CURAS = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  var SALAS = {
+    urgencias: {
+      id: 'urgencias',
+      nombre: 'Sala de Urgencias',
+      descripcion: 'Medicación y material para emergencias',
+      storageKey: 'inventario-urgencias-arcelormittal-v1',
+      icono: ICON_URGENCIAS,
+      seed: seedItemsUrgencias
+    },
+    curas: {
+      id: 'curas',
+      nombre: 'Sala de Curas',
+      descripcion: 'Material de curas y cuidado de heridas',
+      storageKey: 'inventario-curas-arcelormittal-v1',
+      icono: ICON_CURAS,
+      seed: seedItemsCuras
+    }
+  };
 
   var LOGO_LOCKUP =
     '<svg class="brand-logo" viewBox="75 74 1221 527" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ArcelorMittal">' +
@@ -589,14 +720,8 @@
 
   var storageDisponible = true;
 
-  function seedItems() {
+  function construirSeed(base) {
     var now = new Date().toISOString();
-    var base = [
-      { nombre: 'Adrenalina 1mg/ml', categoria: 'medicacion', presentacion: 'Ampolla 1ml', unidad: 'ampollas', stock: 10, stockMinimo: 4, lote: '', caducidad: '', ubicacion: 'Carro de paradas', notas: '' },
-      { nombre: 'Suero fisiológico 0.9%', categoria: 'medicacion', presentacion: 'Bolsa 500ml', unidad: 'bolsas', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario 1', notas: '' },
-      { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' },
-      { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 15, stockMinimo: 5, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' }
-    ];
     return base.map(function (item) {
       item.id = uid();
       item.actualizadoEn = now;
@@ -604,34 +729,66 @@
     });
   }
 
-  function cargarItems() {
+  function seedItemsUrgencias() {
+    return construirSeed([
+      { nombre: 'Adrenalina 1mg/ml', categoria: 'medicacion', presentacion: 'Ampolla 1ml', unidad: 'ampollas', stock: 10, stockMinimo: 4, lote: '', caducidad: '', ubicacion: 'Carro de paradas', notas: '' },
+      { nombre: 'Suero fisiológico 0.9%', categoria: 'medicacion', presentacion: 'Bolsa 500ml', unidad: 'bolsas', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario 1', notas: '' },
+      { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' },
+      { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 15, stockMinimo: 5, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' }
+    ]);
+  }
+
+  function seedItemsCuras() {
+    return construirSeed([
+      { nombre: 'Povidona yodada 10%', categoria: 'medicacion', presentacion: 'Frasco 250ml', unidad: 'frascos', stock: 5, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Carro de curas', notas: '' },
+      { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
+      { nombre: 'Venda de crepé 10cm', categoria: 'material', presentacion: 'Rollo', unidad: 'rollos', stock: 12, stockMinimo: 4, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
+      { nombre: 'Apósito adhesivo estéril', categoria: 'material', presentacion: 'Caja 50 uds', unidad: 'cajas', stock: 4, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
+      { nombre: 'Esparadrapo hipoalergénico', categoria: 'material', presentacion: 'Rollo 5m', unidad: 'rollos', stock: 8, stockMinimo: 3, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
+      { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' }
+    ]);
+  }
+
+  function cargarItems(sala) {
     try {
-      var raw = window.localStorage.getItem(STORAGE_KEY);
+      var raw = window.localStorage.getItem(sala.storageKey);
       if (raw === null) {
-        var iniciales = seedItems();
-        guardarItems(iniciales);
+        var iniciales = sala.seed();
+        guardarItems(sala, iniciales);
         return iniciales;
       }
       var parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : [];
     } catch (err) {
       storageDisponible = false;
-      return seedItems();
+      return sala.seed();
     }
   }
 
-  function guardarItems(items) {
+  function guardarItems(sala, items) {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.localStorage.setItem(sala.storageKey, JSON.stringify(items));
     } catch (err) {
       storageDisponible = false;
+    }
+  }
+
+  function contarProductos(sala) {
+    try {
+      var raw = window.localStorage.getItem(sala.storageKey);
+      if (raw === null) return null;
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.length : null;
+    } catch (err) {
+      return null;
     }
   }
 
   // ---------- estado ----------
 
   var state = {
-    items: cargarItems(),
+    sala: null,
+    items: [],
     busqueda: '',
     filtroCategoria: 'todas',
     filtroEstado: 'todos',
@@ -639,7 +796,7 @@
   };
 
   function guardarYRenderizar() {
-    guardarItems(state.items);
+    guardarItems(SALAS[state.sala], state.items);
     render();
   }
 
@@ -702,14 +859,41 @@
   }
 
   function renderHeader() {
+    var sala = SALAS[state.sala];
     return (
       '<header class="app-header">' +
       '<div class="brand">' +
       '<div class="brand-logo-plate">' + LOGO_LOCKUP + '</div>' +
-      '<span class="brand-product">Inventario<br>Sala de Urgencias</span>' +
-      '</div>' +
+      '<div class="brand-text-block">' +
+      '<span class="brand-product">Inventario<br>' + escapeHtml(sala.nombre) + '</span>' +
+      '<button class="cambiar-sala" onclick="App.cambiarSala()">Cambiar de sala</button>' +
+      '</div></div>' +
       '<button class="btn btn-primary" onclick="App.abrirNuevo()">' + ICON_PLUS + ' Nuevo producto</button>' +
       '</header>'
+    );
+  }
+
+  function renderSelectorSala() {
+    var tarjetas = Object.keys(SALAS).map(function (key) {
+      var sala = SALAS[key];
+      var count = contarProductos(sala);
+      return (
+        '<button class="sala-card" onclick="App.seleccionarSala(\'' + sala.id + '\')">' +
+        '<span class="sala-card-icon">' + sala.icono + '</span>' +
+        '<h2>' + escapeHtml(sala.nombre) + '</h2>' +
+        '<p>' + escapeHtml(sala.descripcion) + '</p>' +
+        (count !== null ? '<span class="sala-card-count">' + count + ' producto' + (count === 1 ? '' : 's') + '</span>' : '') +
+        '</button>'
+      );
+    }).join('');
+
+    return (
+      '<div class="sala-shell">' +
+      '<div class="brand-logo-plate">' + LOGO_LOCKUP + '</div>' +
+      '<h1>¿En qué sala vas a trabajar?</h1>' +
+      '<p class="sala-subtitle">Cada sala tiene su propio inventario, independiente del resto.</p>' +
+      '<div class="sala-grid">' + tarjetas + '</div>' +
+      '</div>'
     );
   }
 
@@ -883,6 +1067,12 @@
 
   function render() {
     var root = document.getElementById('root');
+
+    if (!state.sala) {
+      root.innerHTML = renderSelectorSala();
+      return;
+    }
+
     root.innerHTML =
       '<div class="shell">' +
       renderHeader() +
@@ -897,6 +1087,23 @@
   // ---------- API pública (usada desde los atributos onclick del HTML) ----------
 
   var App = {
+    seleccionarSala: function (salaId) {
+      var sala = SALAS[salaId];
+      if (!sala) return;
+      state.sala = salaId;
+      state.items = cargarItems(sala);
+      state.busqueda = '';
+      state.filtroCategoria = 'todas';
+      state.filtroEstado = 'todos';
+      state.modal = null;
+      render();
+    },
+    cambiarSala: function () {
+      state.sala = null;
+      state.items = [];
+      state.modal = null;
+      render();
+    },
     setBusqueda: function (valor) {
       state.busqueda = valor;
       render();
