@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inventario Urgencias · Servicios Médicos ArcelorMittal</title>
+<style>
+  :root {
+    --color-bg: #f4f6f8;
+    --color-surface: #ffffff;
+    --color-border: #dde3e8;
+    --color-text: #1f2933;
+    --color-muted: #64748b;
+    --color-primary: #1d4ed8;
+    --color-primary-dark: #1e3a8a;
+    --color-danger: #dc2626;
+    --color-danger-bg: #fee2e2;
+    --color-warning: #b45309;
+    --color-warning-bg: #fef3c7;
+    --color-ok: #15803d;
+    --color-ok-bg: #dcfce7;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); }
+  .app { max-width: 1200px; margin: 0 auto; padding: 24px 32px 64px; }
+  .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .app-header h1 { margin: 0; font-size: 24px; }
+  .app-subtitle { margin: 2px 0 0; color: var(--color-muted); font-size: 14px; }
+  .storage-warning { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .summary-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; font-family: inherit; text-align: left; cursor: default; }
+  button.summary-clickable { cursor: pointer; }
+  button.summary-clickable.active { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
+  .summary-value { font-size: 26px; font-weight: 700; }
+  .summary-warning { color: var(--color-warning); }
+  .summary-danger { color: var(--color-danger); }
+  .summary-label { font-size: 13px; color: var(--color-muted); }
+  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-input { flex: 1; min-width: 200px; }
+  .toolbar input, .toolbar select { padding: 9px 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; background: var(--color-surface); }
+  .table-wrap { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; overflow: auto; }
+  .inventory-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .inventory-table th { text-align: left; padding: 12px 14px; background: #eef2f6; color: var(--color-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+  .inventory-table td { padding: 12px 14px; border-top: 1px solid var(--color-border); vertical-align: top; }
+  .cell-title { font-weight: 600; }
+  .cell-subtitle { font-size: 12px; color: var(--color-muted); margin-top: 2px; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .badge-medicacion { background: #dbeafe; color: #1d4ed8; }
+  .badge-material { background: #ede9fe; color: #6d28d9; }
+  .stock-value { font-weight: 600; }
+  .stock-agotado { color: var(--color-danger); }
+  .stock-bajo { color: var(--color-warning); }
+  .stock-ok { color: var(--color-text); }
+  .expiry-value { font-weight: 600; padding: 3px 8px; border-radius: 6px; display: inline-block; white-space: nowrap; }
+  .expiry-caducado { background: var(--color-danger-bg); color: var(--color-danger); }
+  .expiry-proximo { background: var(--color-warning-bg); color: var(--color-warning); }
+  .expiry-ok { background: var(--color-ok-bg); color: var(--color-ok); }
+  .expiry-sin-fecha { color: var(--color-muted); }
+  .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+  .empty-state { text-align: center; color: var(--color-muted); padding: 40px 0; }
+  .error-text { color: var(--color-danger); font-size: 13px; margin: 4px 0; }
+  .btn { border: none; border-radius: 8px; padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; background: var(--color-primary); color: white; transition: background 0.15s ease; font-family: inherit; }
+  .btn:hover { background: var(--color-primary-dark); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-secondary { background: #e5e9ee; color: var(--color-text); }
+  .btn-secondary:hover { background: #d6dce2; }
+  .btn-danger { background: var(--color-danger); }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-small { padding: 6px 10px; font-size: 12px; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+  .modal { background: var(--color-surface); border-radius: 12px; padding: 24px 28px; width: 560px; max-width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25); }
+  .modal-narrow { width: 400px; }
+  .modal h2 { margin: 0 0 6px; font-size: 18px; }
+  .modal-subtitle { color: var(--color-muted); font-size: 14px; margin: 0 0 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-muted); }
+  .field input, .field select, .field textarea { font: inherit; font-weight: 400; color: var(--color-text); padding: 8px 10px; border: 1px solid var(--color-border); border-radius: 8px; }
+  .field-wide { grid-column: 1 / -1; }
+  .modal-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+  .toggle-group { grid-column: 1 / -1; display: flex; gap: 8px; }
+  .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-surface); font-weight: 600; cursor: pointer; font-family: inherit; }
+  .toggle-btn.active.retirar { background: var(--color-danger-bg); border-color: var(--color-danger); color: var(--color-danger); }
+  .toggle-btn.active.reponer { background: var(--color-ok-bg); border-color: var(--color-ok); color: var(--color-ok); }
+  @media (max-width: 720px) {
+    .app { padding: 16px; }
+    .summary-cards { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'inventario-urgencias-arcelormittal-v1';
+  var DIAS_AVISO = 30;
+
+  // ---------- utilidades ----------
+
+  function uid() {
+    return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function diasHastaCaducidad(caducidad) {
+    if (!caducidad) return null;
+    var hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    var fecha = new Date(caducidad + 'T00:00:00');
+    if (isNaN(fecha.getTime())) return null;
+    return Math.round((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  function estadoCaducidad(caducidad) {
+    var dias = diasHastaCaducidad(caducidad);
+    if (dias === null) return 'sin-fecha';
+    if (dias < 0) return 'caducado';
+    if (dias <= DIAS_AVISO) return 'proximo';
+    return 'ok';
+  }
+
+  function estadoStock(stock, stockMinimo) {
+    if (stock <= 0) return 'agotado';
+    if (stockMinimo > 0 && stock <= stockMinimo) return 'bajo';
+    return 'ok';
+  }
+
+  function formatFecha(fecha) {
+    if (!fecha) return '—';
+    var partes = fecha.split('-');
+    return partes[2] + '/' + partes[1] + '/' + partes[0];
+  }
+
+  function textoCaducidad(fecha) {
+    var dias = diasHastaCaducidad(fecha);
+    if (dias === null) return '';
+    if (dias < 0) return 'Caducado hace ' + Math.abs(dias) + ' días';
+    if (dias === 0) return 'Caduca hoy';
+    return 'Caduca en ' + dias + ' días';
+  }
+
+  // ---------- almacenamiento ----------
+
+  var storageDisponible = true;
+
+  function seedItems() {
+    var now = new Date().toISOString();
+    var base = [
+      { nombre: 'Adrenalina 1mg/ml', categoria: 'medicacion', presentacion: 'Ampolla 1ml', unidad: 'ampollas', stock: 10, stockMinimo: 4, lote: '', caducidad: '', ubicacion: 'Carro de paradas', notas: '' },
+      { nombre: 'Suero fisiológico 0.9%', categoria: 'medicacion', presentacion: 'Bolsa 500ml', unidad: 'bolsas', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario 1', notas: '' },
+      { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' },
+      { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 15, stockMinimo: 5, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' }
+    ];
+    return base.map(function (item) {
+      item.id = uid();
+      item.actualizadoEn = now;
+      return item;
+    });
+  }
+
+  function cargarItems() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw === null) {
+        var iniciales = seedItems();
+        guardarItems(iniciales);
+        return iniciales;
+      }
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      storageDisponible = false;
+      return seedItems();
+    }
+  }
+
+  function guardarItems(items) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (err) {
+      storageDisponible = false;
+    }
+  }
+
+  // ---------- estado ----------
+
+  var state = {
+    items: cargarItems(),
+    busqueda: '',
+    filtroCategoria: 'todas',
+    filtroEstado: 'todos',
+    modal: null // { tipo: 'nuevo' | 'editar' | 'ajustar' | 'eliminar', itemId, error }
+  };
+
+  function guardarYRenderizar() {
+    guardarItems(state.items);
+    render();
+  }
+
+  // ---------- acciones ----------
+
+  function crearItem(datos) {
+    var nuevo = Object.assign({}, datos, { id: uid(), actualizadoEn: new Date().toISOString() });
+    state.items.push(nuevo);
+    state.modal = null;
+    guardarYRenderizar();
+  }
+
+  function editarItem(id, datos) {
+    var idx = state.items.findIndex(function (i) { return i.id === id; });
+    if (idx === -1) return;
+    state.items[idx] = Object.assign({}, state.items[idx], datos, { actualizadoEn: new Date().toISOString() });
+    state.modal = null;
+    guardarYRenderizar();
+  }
+
+  function ajustarStock(id, delta) {
+    var idx = state.items.findIndex(function (i) { return i.id === id; });
+    if (idx === -1) return;
+    var item = state.items[idx];
+    var nuevoStock = Math.max(0, item.stock + delta);
+    state.items[idx] = Object.assign({}, item, { stock: nuevoStock, actualizadoEn: new Date().toISOString() });
+    state.modal = null;
+    guardarYRenderizar();
+  }
+
+  function eliminarItem(id) {
+    state.items = state.items.filter(function (i) { return i.id !== id; });
+    state.modal = null;
+    guardarYRenderizar();
+  }
+
+  // ---------- render ----------
+
+  function itemsFiltrados() {
+    var texto = state.busqueda.trim().toLowerCase();
+    return state.items
+      .filter(function (item) { return state.filtroCategoria === 'todas' || item.categoria === state.filtroCategoria; })
+      .filter(function (item) {
+        if (state.filtroEstado === 'todos') return true;
+        if (state.filtroEstado === 'caducados') return estadoCaducidad(item.caducidad) === 'caducado';
+        if (state.filtroEstado === 'proximos') return estadoCaducidad(item.caducidad) === 'proximo';
+        if (state.filtroEstado === 'bajo-stock') return estadoStock(item.stock, item.stockMinimo) !== 'ok';
+        return true;
+      })
+      .filter(function (item) {
+        if (!texto) return true;
+        return (
+          item.nombre.toLowerCase().indexOf(texto) !== -1 ||
+          item.presentacion.toLowerCase().indexOf(texto) !== -1 ||
+          item.ubicacion.toLowerCase().indexOf(texto) !== -1 ||
+          item.lote.toLowerCase().indexOf(texto) !== -1
+        );
+      })
+      .sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
+  }
+
+  function renderResumen() {
+    var caducados = state.items.filter(function (i) { return estadoCaducidad(i.caducidad) === 'caducado'; }).length;
+    var proximos = state.items.filter(function (i) { return estadoCaducidad(i.caducidad) === 'proximo'; }).length;
+    var bajoStock = state.items.filter(function (i) { return estadoStock(i.stock, i.stockMinimo) !== 'ok'; }).length;
+
+    function tarjetaFiltro(valor, clase, valorLabel, label) {
+      var activo = state.filtroEstado === valor;
+      return '<button class="summary-card summary-clickable ' + (activo ? 'active' : '') + '" onclick="App.toggleFiltroEstado(\'' + valor + '\')">' +
+        '<span class="summary-value ' + clase + '">' + valorLabel + '</span>' +
+        '<span class="summary-label">' + label + '</span></button>';
+    }
+
+    return (
+      '<section class="summary-cards">' +
+      '<div class="summary-card"><span class="summary-value">' + state.items.length + '</span><span class="summary-label">Productos</span></div>' +
+      tarjetaFiltro('bajo-stock', 'summary-warning', bajoStock, 'Stock bajo o agotado') +
+      tarjetaFiltro('proximos', 'summary-warning', proximos, 'Próximos a caducar') +
+      tarjetaFiltro('caducados', 'summary-danger', caducados, 'Caducados') +
+      '</section>'
+    );
+  }
+
+  function renderToolbar() {
+    return (
+      '<section class="toolbar">' +
+      '<input type="search" class="search-input" placeholder="Buscar por nombre, presentación, ubicación o lote…" value="' + escapeHtml(state.busqueda) + '" oninput="App.setBusqueda(this.value)" />' +
+      '<select onchange="App.setFiltroCategoria(this.value)">' +
+      '<option value="todas"' + (state.filtroCategoria === 'todas' ? ' selected' : '') + '>Todas las categorías</option>' +
+      '<option value="medicacion"' + (state.filtroCategoria === 'medicacion' ? ' selected' : '') + '>Medicación</option>' +
+      '<option value="material"' + (state.filtroCategoria === 'material' ? ' selected' : '') + '>Material</option>' +
+      '</select>' +
+      '<select onchange="App.setFiltroEstado(this.value)">' +
+      '<option value="todos"' + (state.filtroEstado === 'todos' ? ' selected' : '') + '>Todos los estados</option>' +
+      '<option value="bajo-stock"' + (state.filtroEstado === 'bajo-stock' ? ' selected' : '') + '>Stock bajo o agotado</option>' +
+      '<option value="proximos"' + (state.filtroEstado === 'proximos' ? ' selected' : '') + '>Próximos a caducar</option>' +
+      '<option value="caducados"' + (state.filtroEstado === 'caducados' ? ' selected' : '') + '>Caducados</option>' +
+      '</select>' +
+      '</section>'
+    );
+  }
+
+  function renderTabla() {
+    var items = itemsFiltrados();
+    if (items.length === 0) {
+      return '<p class="empty-state">No hay productos que coincidan con el filtro.</p>';
+    }
+    var filas = items.map(function (item) {
+      var eCaducidad = estadoCaducidad(item.caducidad);
+      var eStock = estadoStock(item.stock, item.stockMinimo);
+      return (
+        '<tr>' +
+        '<td><div class="cell-title">' + escapeHtml(item.nombre) + '</div>' +
+        (item.presentacion ? '<div class="cell-subtitle">' + escapeHtml(item.presentacion) + '</div>' : '') +
+        (item.lote ? '<div class="cell-subtitle">Lote: ' + escapeHtml(item.lote) + '</div>' : '') +
+        '</td>' +
+        '<td><span class="badge badge-' + item.categoria + '">' + (item.categoria === 'medicacion' ? 'Medicación' : 'Material') + '</span></td>' +
+        '<td><span class="stock-value stock-' + eStock + '">' + item.stock + ' ' + escapeHtml(item.unidad) + '</span>' +
+        (eStock !== 'ok' ? '<div class="cell-subtitle">' + (eStock === 'agotado' ? 'Sin stock' : 'Mínimo: ' + item.stockMinimo) + '</div>' : '') +
+        '</td>' +
+        '<td><span class="expiry-value expiry-' + eCaducidad + '">' + formatFecha(item.caducidad) + '</span>' +
+        (item.caducidad ? '<div class="cell-subtitle">' + textoCaducidad(item.caducidad) + '</div>' : '') +
+        '</td>' +
+        '<td>' + (escapeHtml(item.ubicacion) || '—') + '</td>' +
+        '<td class="actions-cell">' +
+        '<button class="btn btn-small" onclick="App.abrirAjustar(\'' + item.id + '\')">Ajustar stock</button>' +
+        '<button class="btn btn-small btn-secondary" onclick="App.abrirEditar(\'' + item.id + '\')">Editar</button>' +
+        '<button class="btn btn-small btn-danger" onclick="App.abrirEliminar(\'' + item.id + '\')">Eliminar</button>' +
+        '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    return (
+      '<div class="table-wrap"><table class="inventory-table"><thead><tr>' +
+      '<th>Producto</th><th>Categoría</th><th>Stock</th><th>Caducidad</th><th>Ubicación</th><th>Acciones</th>' +
+      '</tr></thead><tbody>' + filas + '</tbody></table></div>'
+    );
+  }
+
+  function campoTexto(id, label, valor, tipo, extra) {
+    tipo = tipo || 'text';
+    return (
+      '<label class="field' + (extra && extra.wide ? ' field-wide' : '') + '">' + label +
+      '<input type="' + tipo + '" id="' + id + '" value="' + escapeHtml(valor) + '"' +
+      (extra && extra.min !== undefined ? ' min="' + extra.min + '"' : '') +
+      (extra && extra.autofocus ? ' autofocus' : '') + ' /></label>'
+    );
+  }
+
+  function renderModal() {
+    if (!state.modal) return '';
+    var modal = state.modal;
+
+    if (modal.tipo === 'nuevo' || modal.tipo === 'editar') {
+      var item = modal.tipo === 'editar' ? state.items.find(function (i) { return i.id === modal.itemId; }) : null;
+      var d = item || { nombre: '', categoria: 'medicacion', presentacion: '', unidad: 'unidades', stock: 0, stockMinimo: 0, lote: '', caducidad: '', ubicacion: '', notas: '' };
+      return (
+        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal" onclick="event.stopPropagation()">' +
+        '<h2>' + (item ? 'Editar producto' : 'Nuevo producto') + '</h2>' +
+        '<form class="form-grid" onsubmit="return App.guardarFormulario(event)">' +
+        campoTexto('f-nombre', 'Nombre *', d.nombre, 'text', { wide: true, autofocus: true }) +
+        '<label class="field">Categoría<select id="f-categoria">' +
+        '<option value="medicacion"' + (d.categoria === 'medicacion' ? ' selected' : '') + '>Medicación</option>' +
+        '<option value="material"' + (d.categoria === 'material' ? ' selected' : '') + '>Material</option>' +
+        '</select></label>' +
+        campoTexto('f-presentacion', 'Presentación', d.presentacion) +
+        campoTexto('f-unidad', 'Unidad', d.unidad) +
+        campoTexto('f-stock', 'Stock actual', d.stock, 'number', { min: 0 }) +
+        campoTexto('f-stockMinimo', 'Stock mínimo (aviso)', d.stockMinimo, 'number', { min: 0 }) +
+        campoTexto('f-caducidad', 'Fecha de caducidad', d.caducidad, 'date') +
+        campoTexto('f-lote', 'Lote', d.lote) +
+        campoTexto('f-ubicacion', 'Ubicación', d.ubicacion) +
+        '<label class="field field-wide">Notas<textarea id="f-notas" rows="2">' + escapeHtml(d.notas) + '</textarea></label>' +
+        (modal.error ? '<p class="error-text field-wide">' + escapeHtml(modal.error) + '</p>' : '') +
+        '<div class="modal-actions">' +
+        '<button type="button" class="btn btn-secondary" onclick="App.cerrarModal()">Cancelar</button>' +
+        '<button type="submit" class="btn btn-primary">Guardar</button>' +
+        '</div></form></div></div>'
+      );
+    }
+
+    if (modal.tipo === 'ajustar') {
+      var itemAj = state.items.find(function (i) { return i.id === modal.itemId; });
+      if (!itemAj) return '';
+      var modoActual = modal.modo || 'retirar';
+      var cantidad = modal.cantidad != null ? modal.cantidad : 1;
+      var resultante = modoActual === 'retirar' ? itemAj.stock - cantidad : itemAj.stock + cantidad;
+      return (
+        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal modal-narrow" onclick="event.stopPropagation()">' +
+        '<h2>Ajustar stock</h2>' +
+        '<p class="modal-subtitle">' + escapeHtml(itemAj.nombre) + ' · stock actual: <strong>' + itemAj.stock + '</strong> ' + escapeHtml(itemAj.unidad) + '</p>' +
+        '<form class="form-grid" onsubmit="return App.confirmarAjuste(event)">' +
+        '<div class="toggle-group">' +
+        '<button type="button" class="toggle-btn ' + (modoActual === 'retirar' ? 'active retirar' : '') + '" onclick="App.setModoAjuste(\'retirar\')">Retirar</button>' +
+        '<button type="button" class="toggle-btn ' + (modoActual === 'reponer' ? 'active reponer' : '') + '" onclick="App.setModoAjuste(\'reponer\')">Reponer</button>' +
+        '</div>' +
+        '<label class="field field-wide">Cantidad<input type="number" min="1" id="f-cantidad" value="' + cantidad + '" oninput="App.setCantidadAjuste(this.value)" autofocus /></label>' +
+        '<p class="modal-subtitle field-wide">Stock resultante: <strong>' + Math.max(0, resultante) + '</strong> ' + escapeHtml(itemAj.unidad) + '</p>' +
+        (modal.error ? '<p class="error-text field-wide">' + escapeHtml(modal.error) + '</p>' : '') +
+        '<div class="modal-actions">' +
+        '<button type="button" class="btn btn-secondary" onclick="App.cerrarModal()">Cancelar</button>' +
+        '<button type="submit" class="btn btn-primary">Confirmar</button>' +
+        '</div></form></div></div>'
+      );
+    }
+
+    if (modal.tipo === 'eliminar') {
+      var itemEl = state.items.find(function (i) { return i.id === modal.itemId; });
+      if (!itemEl) return '';
+      return (
+        '<div class="modal-backdrop" onclick="App.cerrarModal(event)">' +
+        '<div class="modal modal-narrow" onclick="event.stopPropagation()">' +
+        '<h2>Eliminar producto</h2>' +
+        '<p class="modal-subtitle">¿Seguro que quieres eliminar "' + escapeHtml(itemEl.nombre) + '" del inventario? Esta acción no se puede deshacer.</p>' +
+        '<div class="modal-actions">' +
+        '<button class="btn btn-secondary" onclick="App.cerrarModal()">Cancelar</button>' +
+        '<button class="btn btn-danger" onclick="App.confirmarEliminar()">Eliminar</button>' +
+        '</div></div></div>'
+      );
+    }
+
+    return '';
+  }
+
+  function render() {
+    var root = document.getElementById('root');
+    root.innerHTML =
+      '<div class="app">' +
+      '<header class="app-header"><div>' +
+      '<h1>Inventario Sala de Urgencias</h1>' +
+      '<p class="app-subtitle">Servicios Médicos ArcelorMittal</p>' +
+      '</div><button class="btn btn-primary" onclick="App.abrirNuevo()">+ Nuevo producto</button></header>' +
+      (storageDisponible ? '' : '<div class="storage-warning">El navegador no permite guardar datos de forma persistente (modo privado o almacenamiento bloqueado). Los cambios se perderán al cerrar esta pestaña.</div>') +
+      renderResumen() +
+      renderToolbar() +
+      renderTabla() +
+      '</div>' +
+      renderModal();
+  }
+
+  // ---------- API pública (usada desde los atributos onclick del HTML) ----------
+
+  var App = {
+    setBusqueda: function (valor) {
+      state.busqueda = valor;
+      render();
+      var input = document.querySelector('.search-input');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    },
+    setFiltroCategoria: function (valor) { state.filtroCategoria = valor; render(); },
+    setFiltroEstado: function (valor) { state.filtroEstado = valor; render(); },
+    toggleFiltroEstado: function (valor) {
+      state.filtroEstado = state.filtroEstado === valor ? 'todos' : valor;
+      render();
+    },
+    abrirNuevo: function () { state.modal = { tipo: 'nuevo' }; render(); },
+    abrirEditar: function (id) { state.modal = { tipo: 'editar', itemId: id }; render(); },
+    abrirAjustar: function (id) { state.modal = { tipo: 'ajustar', itemId: id, modo: 'retirar', cantidad: 1 }; render(); },
+    abrirEliminar: function (id) { state.modal = { tipo: 'eliminar', itemId: id }; render(); },
+    cerrarModal: function (event) {
+      if (event && event.target !== event.currentTarget) return;
+      state.modal = null;
+      render();
+    },
+    setModoAjuste: function (modo) { state.modal.modo = modo; render(); },
+    setCantidadAjuste: function (valor) { state.modal.cantidad = Number(valor); },
+
+    guardarFormulario: function (event) {
+      event.preventDefault();
+      var datos = {
+        nombre: document.getElementById('f-nombre').value.trim(),
+        categoria: document.getElementById('f-categoria').value,
+        presentacion: document.getElementById('f-presentacion').value.trim(),
+        unidad: document.getElementById('f-unidad').value.trim() || 'unidades',
+        stock: Number(document.getElementById('f-stock').value),
+        stockMinimo: Number(document.getElementById('f-stockMinimo').value),
+        caducidad: document.getElementById('f-caducidad').value,
+        lote: document.getElementById('f-lote').value.trim(),
+        ubicacion: document.getElementById('f-ubicacion').value.trim(),
+        notas: document.getElementById('f-notas').value.trim()
+      };
+      if (!datos.nombre) {
+        state.modal.error = 'El nombre es obligatorio.';
+        render();
+        return false;
+      }
+      if (datos.stock < 0) {
+        state.modal.error = 'El stock no puede ser negativo.';
+        render();
+        return false;
+      }
+      if (state.modal.tipo === 'nuevo') {
+        crearItem(datos);
+      } else {
+        editarItem(state.modal.itemId, datos);
+      }
+      return false;
+    },
+
+    confirmarAjuste: function (event) {
+      event.preventDefault();
+      var modal = state.modal;
+      var item = state.items.find(function (i) { return i.id === modal.itemId; });
+      var cantidad = modal.cantidad;
+      if (!cantidad || cantidad <= 0) {
+        modal.error = 'La cantidad debe ser mayor que 0.';
+        render();
+        return false;
+      }
+      if (modal.modo === 'retirar' && cantidad > item.stock) {
+        modal.error = 'No puedes retirar más unidades de las que hay en stock.';
+        render();
+        return false;
+      }
+      ajustarStock(modal.itemId, modal.modo === 'retirar' ? -cantidad : cantidad);
+      return false;
+    },
+
+    confirmarEliminar: function () {
+      eliminarItem(state.modal.itemId);
+    }
+  };
+
+  window.App = App;
+  render();
+})();
+</script>
+</body>
+</html>
