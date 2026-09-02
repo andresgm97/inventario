@@ -115,11 +115,100 @@
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    padding-bottom: 22px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--border);
     flex-wrap: wrap;
   }
+
+  /* ---------- banner con foto de fábrica ---------- */
+
+  .factory-banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .factory-banner-img {
+    position: absolute;
+    inset: -12px;
+    background-image: url('fabrica-arcelormittal.jpg');
+    background-size: cover;
+    background-position: center 45%;
+    background-color: #14130f;
+    filter: blur(4px) brightness(0.55) saturate(1.05);
+    transform: scale(1.06);
+  }
+
+  .factory-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(12, 10, 8, 0.4) 0%, rgba(12, 10, 8, 0.78) 100%);
+  }
+
+  .factory-banner-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .banner-strip { min-height: 118px; display: flex; align-items: center; }
+  .banner-strip .factory-banner-content { width: 100%; padding-top: 20px; padding-bottom: 20px; }
+
+  .banner-strip .brand-product { color: rgba(255, 255, 255, 0.92); }
+  .banner-strip .cambiar-sala { color: rgba(255, 255, 255, 0.72); }
+  .banner-strip .cambiar-sala:hover { color: #ffffff; }
+
+  .banner-strip .btn-secondary {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+  }
+  .banner-strip .btn-secondary:hover { background: rgba(255, 255, 255, 0.22); }
+
+  .sala-hero {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+  }
+
+  .sala-hero-img {
+    position: absolute;
+    inset: 0;
+    background-image: url('fabrica-arcelormittal.jpg');
+    background-size: cover;
+    background-position: center 42%;
+    background-color: #14130f;
+  }
+
+  .sala-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 9, 8, 0.6) 0%, rgba(10, 9, 8, 0.35) 38%, rgba(10, 9, 8, 0.8) 100%);
+  }
+
+  .sala-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 56px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .sala-hero h1 { color: #ffffff; font-size: 28px; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5); margin: 0; }
+  .sala-hero .sala-subtitle { color: rgba(255, 255, 255, 0.88); margin: 0 0 30px; }
+  .sala-hero .sala-grid { margin-top: 10px; }
 
   .brand { display: flex; align-items: center; gap: 16px; }
 
@@ -520,33 +609,10 @@
 
   /* ---------- selector de sala ---------- */
 
-  .sala-shell {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 64px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-  }
-
-  .sala-shell .brand-logo-plate { margin-bottom: 28px; }
-
-  .sala-shell h1 {
-    font-size: 26px;
-    margin-bottom: 6px;
-  }
-
-  .sala-shell .sala-subtitle {
-    color: var(--text-muted);
-    font-size: 15px;
-    margin: 0 0 40px;
-  }
-
   .sala-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
     width: 100%;
   }
@@ -557,6 +623,7 @@
     align-items: flex-start;
     text-align: left;
     gap: 14px;
+    flex: 0 1 320px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -622,8 +689,8 @@
   .cambiar-sala:hover { color: var(--accent); }
 
   @media (max-width: 640px) {
-    .sala-grid { grid-template-columns: 1fr; }
-    .sala-shell { padding: 40px 20px; }
+    .sala-card { flex-basis: 100%; }
+    .sala-hero-content { padding: 40px 20px; }
   }
 </style>
 </head>
@@ -636,7 +703,6 @@
   var DIAS_AVISO = 30;
 
   var ICON_URGENCIAS = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 13h4l2-7 4 14 2-7h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var ICON_CURAS = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   var SALAS = {
     urgencias: {
@@ -646,14 +712,6 @@
       storageKey: 'inventario-urgencias-arcelormittal-v1',
       icono: ICON_URGENCIAS,
       seed: seedItemsUrgencias
-    },
-    curas: {
-      id: 'curas',
-      nombre: 'Sala de Curas',
-      descripcion: 'Material de curas y cuidado de heridas',
-      storageKey: 'inventario-curas-arcelormittal-v1',
-      icono: ICON_CURAS,
-      seed: seedItemsCuras
     }
   };
 
@@ -768,17 +826,6 @@
       { nombre: 'Suero fisiológico 0.9%', categoria: 'medicacion', presentacion: 'Bolsa 500ml', unidad: 'bolsas', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario 1', notas: '' },
       { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' },
       { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 15, stockMinimo: 5, lote: '', caducidad: '', ubicacion: 'Armario 2', notas: '' }
-    ]);
-  }
-
-  function seedItemsCuras() {
-    return construirSeed([
-      { nombre: 'Povidona yodada 10%', categoria: 'medicacion', presentacion: 'Frasco 250ml', unidad: 'frascos', stock: 5, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Carro de curas', notas: '' },
-      { nombre: 'Gasas estériles 10x10', categoria: 'material', presentacion: 'Paquete 5 uds', unidad: 'paquetes', stock: 20, stockMinimo: 8, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
-      { nombre: 'Venda de crepé 10cm', categoria: 'material', presentacion: 'Rollo', unidad: 'rollos', stock: 12, stockMinimo: 4, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
-      { nombre: 'Apósito adhesivo estéril', categoria: 'material', presentacion: 'Caja 50 uds', unidad: 'cajas', stock: 4, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
-      { nombre: 'Esparadrapo hipoalergénico', categoria: 'material', presentacion: 'Rollo 5m', unidad: 'rollos', stock: 8, stockMinimo: 3, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' },
-      { nombre: 'Guantes de nitrilo talla M', categoria: 'material', presentacion: 'Caja 100 uds', unidad: 'cajas', stock: 6, stockMinimo: 2, lote: '', caducidad: '', ubicacion: 'Armario de curas', notas: '' }
     ]);
   }
 
@@ -1014,21 +1061,26 @@
   function renderHeader() {
     var sala = SALAS[state.sala];
     return (
-      '<header class="app-header no-print">' +
+      '<div class="factory-banner banner-strip no-print">' +
+      '<div class="factory-banner-img"></div>' +
+      '<div class="factory-banner-overlay"></div>' +
+      '<div class="factory-banner-content">' +
+      '<header class="app-header">' +
       '<div class="brand">' +
       '<div class="brand-logo-plate">' + LOGO_LOCKUP + '</div>' +
       '<div class="brand-text-block">' +
       '<span class="brand-product">Inventario<br>' + escapeHtml(sala.nombre) + '</span>' +
       '<button class="cambiar-sala" onclick="App.cambiarSala()">Cambiar de sala</button>' +
       '</div></div>' +
-      '<div class="header-actions no-print">' +
+      '<div class="header-actions">' +
       '<input type="file" id="f-importar" accept=".csv,text/csv" class="visually-hidden" onchange="App.manejarImportacion(event)" />' +
       '<button class="btn btn-secondary btn-small" onclick="App.abrirImportar()">' + ICON_IMPORT + ' Importar</button>' +
       '<button class="btn btn-secondary btn-small" onclick="App.exportarExcel()">' + ICON_EXPORT + ' Excel</button>' +
       '<button class="btn btn-secondary btn-small" onclick="App.exportarPDF()">' + ICON_EXPORT + ' PDF</button>' +
       '<button class="btn btn-primary" onclick="App.abrirNuevo()">' + ICON_PLUS + ' Nuevo producto</button>' +
       '</div>' +
-      '</header>'
+      '</header>' +
+      '</div></div>'
     );
   }
 
@@ -1047,12 +1099,15 @@
     }).join('');
 
     return (
-      '<div class="sala-shell">' +
+      '<div class="sala-hero">' +
+      '<div class="sala-hero-img"></div>' +
+      '<div class="sala-hero-overlay"></div>' +
+      '<div class="sala-hero-content">' +
       '<div class="brand-logo-plate">' + LOGO_LOCKUP + '</div>' +
       '<h1>¿En qué sala vas a trabajar?</h1>' +
       '<p class="sala-subtitle">Cada sala tiene su propio inventario, independiente del resto.</p>' +
       '<div class="sala-grid">' + tarjetas + '</div>' +
-      '</div>'
+      '</div></div>'
     );
   }
 
@@ -1236,8 +1291,8 @@
     var fechaImpresion = new Date().toLocaleString('es-ES');
 
     root.innerHTML =
-      '<div class="shell">' +
       renderHeader() +
+      '<div class="shell">' +
       '<div class="print-header"><h1>Inventario · ' + escapeHtml(sala.nombre) + '</h1><p>ArcelorMittal · Servicios Médicos · Generado el ' + fechaImpresion + '</p></div>' +
       (storageDisponible ? '' : '<div class="storage-warning">El navegador no permite guardar datos de forma persistente (modo privado o almacenamiento bloqueado). Los cambios se perderán al cerrar esta pestaña.</div>') +
       renderResumen() +
