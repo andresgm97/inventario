@@ -166,6 +166,28 @@
   }
   .banner-strip .btn-secondary:hover { background: rgba(255, 255, 255, 0.22); }
 
+  .view-tabs { display: flex; gap: 6px; margin-top: 16px; }
+
+  .view-tab {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.78);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .view-tab:hover { background: rgba(255, 255, 255, 0.16); }
+
+  .view-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
   .sala-hero {
     position: relative;
     min-height: 100vh;
@@ -426,6 +448,162 @@
   }
 
   .toolbar input::placeholder { color: var(--text-faint); }
+
+  /* ---------- estadísticas ---------- */
+
+  .stats-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .stats-toolbar select {
+    padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .period-toggle { display: flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; }
+
+  .period-toggle-btn {
+    background: var(--surface);
+    border: none;
+    border-right: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+
+  .period-toggle-btn:last-child { border-right: none; }
+  .period-toggle-btn.active { background: var(--accent); color: var(--accent-contrast); }
+
+  .stat-name-value { font-size: 17px !important; line-height: 1.25; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: start;
+  }
+
+  .stats-grid.stats-grid-2col { grid-template-columns: 1fr 1fr; }
+
+  .stats-panel {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stats-panel h3 { font-size: 15px; margin: 0 0 4px; }
+
+  .stats-panel-hint { font-size: 12.5px; color: var(--text-muted); margin: 0 0 14px; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-row:first-of-type { border-top: none; }
+
+  .stat-row-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stat-row-bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bg-inset);
+    overflow: hidden;
+  }
+
+  .stat-row-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+
+  .stat-row-value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .trend-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 160px;
+    padding-top: 20px;
+  }
+
+  .trend-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; }
+
+  .trend-bar-track {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+  }
+
+  .trend-bar-fill {
+    width: 60%;
+    min-width: 6px;
+    background: var(--accent);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .trend-bar-value {
+    position: absolute;
+    top: -18px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .trend-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--text-faint); }
+
+  .stale-list { list-style: none; margin: 0; padding: 0; }
+
+  .stale-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .stale-list li:first-child { border-top: none; }
+
+  @media (max-width: 720px) {
+    .stats-grid.stats-grid-2col { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
+    .stat-row-bar-track { grid-column: 1 / -1; order: 3; }
+  }
 
   /* ---------- table ---------- */
 
@@ -786,6 +964,7 @@
       nombre: 'Sala de Urgencias',
       descripcion: 'Medicación y material para emergencias',
       storageKey: 'inventario-urgencias-arcelormittal-v1',
+      movKey: 'inventario-urgencias-arcelormittal-v1-movimientos',
       icono: ICON_URGENCIAS,
       seed: seedItemsUrgencias
     }
@@ -930,15 +1109,58 @@
     }
   }
 
+  // ---------- movimientos (histórico de retiradas/reposiciones) ----------
+
+  function cargarMovimientos(sala) {
+    try {
+      var raw = window.localStorage.getItem(sala.movKey);
+      if (raw === null) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function guardarMovimientos(sala, movimientos) {
+    try {
+      window.localStorage.setItem(sala.movKey, JSON.stringify(movimientos));
+    } catch (err) {
+      storageDisponible = false;
+    }
+  }
+
+  function registrarMovimiento(item, tipo, cantidad, stockResultante) {
+    var mov = {
+      id: uid(),
+      itemId: item.id,
+      itemNombre: item.nombre,
+      categoria: item.categoria,
+      tipo: tipo,
+      cantidad: cantidad,
+      stockResultante: stockResultante,
+      fecha: new Date().toISOString()
+    };
+    state.movimientos.push(mov);
+    guardarMovimientos(SALAS[state.sala], state.movimientos);
+  }
+
   // ---------- estado ----------
+
+  var hoy = new Date();
 
   var state = {
     sala: null,
     items: [],
+    movimientos: [],
+    vista: 'inventario', // 'inventario' | 'estadisticas'
     busqueda: '',
     filtroCategoria: 'todas',
     filtroEstado: 'todos',
-    modal: null // { tipo: 'nuevo' | 'editar' | 'ajustar' | 'eliminar', itemId, error }
+    modal: null, // { tipo: 'nuevo' | 'editar' | 'ajustar' | 'eliminar', itemId, error }
+    statsPeriodo: 'mensual', // 'mensual' | 'anual'
+    statsAnio: hoy.getFullYear(),
+    statsMes: hoy.getMonth() + 1
   };
 
   function guardarYRenderizar() {
@@ -968,7 +1190,9 @@
     if (idx === -1) return;
     var item = state.items[idx];
     var nuevoStock = Math.max(0, item.stock + delta);
-    state.items[idx] = Object.assign({}, item, { stock: nuevoStock, actualizadoEn: new Date().toISOString() });
+    var itemActualizado = Object.assign({}, item, { stock: nuevoStock, actualizadoEn: new Date().toISOString() });
+    state.items[idx] = itemActualizado;
+    registrarMovimiento(itemActualizado, delta < 0 ? 'retirar' : 'reponer', Math.abs(delta), nuevoStock);
     state.modal = null;
     guardarYRenderizar();
   }
@@ -1014,6 +1238,25 @@
         item.caducidad,
         item.ubicacion,
         item.notas
+      ].map(csvEscape);
+      filas.push(fila.join(','));
+    });
+    return '﻿' + filas.join('\r\n') + '\r\n';
+  }
+
+  function movimientosToCSV(movimientos) {
+    var filas = [['Fecha', 'Hora', 'Producto', 'Categoría', 'Tipo', 'Cantidad', 'Stock resultante'].map(csvEscape).join(',')];
+    var ordenados = movimientos.slice().sort(function (a, b) { return new Date(b.fecha) - new Date(a.fecha); });
+    ordenados.forEach(function (mov) {
+      var d = new Date(mov.fecha);
+      var fila = [
+        d.toLocaleDateString('es-ES'),
+        d.toLocaleTimeString('es-ES'),
+        mov.itemNombre,
+        categoriaALabel(mov.categoria),
+        mov.tipo === 'retirar' ? 'Retirada' : 'Reposición',
+        mov.cantidad,
+        mov.stockResultante
       ].map(csvEscape);
       filas.push(fila.join(','));
     });
@@ -1126,6 +1369,16 @@
 
   function renderHeader() {
     var sala = SALAS[state.sala];
+    var enInventario = state.vista === 'inventario';
+
+    var accionesVista = enInventario
+      ? '<input type="file" id="f-importar" accept=".csv,text/csv" class="visually-hidden" onchange="App.manejarImportacion(event)" />' +
+        '<button class="btn btn-secondary btn-small" onclick="App.abrirImportar()">' + ICON_IMPORT + ' Importar</button>' +
+        '<button class="btn btn-secondary btn-small" onclick="App.exportarExcel()">' + ICON_EXPORT + ' Excel</button>' +
+        '<button class="btn btn-secondary btn-small" onclick="App.exportarPDF()">' + ICON_EXPORT + ' PDF</button>' +
+        '<button class="btn btn-primary" onclick="App.abrirNuevo()">' + ICON_PLUS + ' Nuevo producto</button>'
+      : '<button class="btn btn-secondary btn-small" onclick="App.exportarPDF()">' + ICON_EXPORT + ' PDF</button>';
+
     return (
       '<div class="factory-banner banner-strip no-print">' +
       '<div class="factory-banner-img"></div>' +
@@ -1136,17 +1389,15 @@
       renderBrandId(false) +
       '<div class="brand-divider"></div>' +
       '<div class="brand-text-block">' +
-      '<span class="brand-product">Inventario<br>' + escapeHtml(sala.nombre) + '</span>' +
+      '<span class="brand-product">' + (enInventario ? 'Inventario' : 'Estadísticas') + '<br>' + escapeHtml(sala.nombre) + '</span>' +
       '<button class="cambiar-sala" onclick="App.cambiarSala()">Cambiar de sala</button>' +
       '</div></div>' +
-      '<div class="header-actions">' +
-      '<input type="file" id="f-importar" accept=".csv,text/csv" class="visually-hidden" onchange="App.manejarImportacion(event)" />' +
-      '<button class="btn btn-secondary btn-small" onclick="App.abrirImportar()">' + ICON_IMPORT + ' Importar</button>' +
-      '<button class="btn btn-secondary btn-small" onclick="App.exportarExcel()">' + ICON_EXPORT + ' Excel</button>' +
-      '<button class="btn btn-secondary btn-small" onclick="App.exportarPDF()">' + ICON_EXPORT + ' PDF</button>' +
-      '<button class="btn btn-primary" onclick="App.abrirNuevo()">' + ICON_PLUS + ' Nuevo producto</button>' +
-      '</div>' +
+      '<div class="header-actions">' + accionesVista + '</div>' +
       '</header>' +
+      '<nav class="view-tabs">' +
+      '<button class="view-tab' + (enInventario ? ' active' : '') + '" onclick="App.setVista(\'inventario\')">Inventario</button>' +
+      '<button class="view-tab' + (!enInventario ? ' active' : '') + '" onclick="App.setVista(\'estadisticas\')">Estadísticas</button>' +
+      '</nav>' +
       '</div></div>'
     );
   }
@@ -1259,6 +1510,164 @@
     );
   }
 
+  // ---------- estadísticas ----------
+
+  var MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  function aniosDisponibles() {
+    var anios = {};
+    state.movimientos.forEach(function (m) { anios[new Date(m.fecha).getFullYear()] = true; });
+    anios[state.statsAnio] = true;
+    anios[new Date().getFullYear()] = true;
+    return Object.keys(anios).map(Number).sort(function (a, b) { return b - a; });
+  }
+
+  function retiradasEnPeriodo() {
+    return state.movimientos.filter(function (m) {
+      if (m.tipo !== 'retirar') return false;
+      var d = new Date(m.fecha);
+      if (d.getFullYear() !== state.statsAnio) return false;
+      if (state.statsPeriodo === 'mensual') return (d.getMonth() + 1) === state.statsMes;
+      return true;
+    });
+  }
+
+  function consumoPorProducto(retiradas) {
+    var mapa = {};
+    retiradas.forEach(function (m) {
+      if (!mapa[m.itemId]) mapa[m.itemId] = { itemId: m.itemId, nombre: m.itemNombre, total: 0 };
+      mapa[m.itemId].total += m.cantidad;
+    });
+    var lista = Object.keys(mapa).map(function (k) { return mapa[k]; });
+    lista.sort(function (a, b) { return b.total - a.total; });
+    return lista;
+  }
+
+  function tendenciaMensual() {
+    var totales = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    state.movimientos.forEach(function (m) {
+      if (m.tipo !== 'retirar') return;
+      var d = new Date(m.fecha);
+      if (d.getFullYear() !== state.statsAnio) return;
+      totales[d.getMonth()] += m.cantidad;
+    });
+    return totales;
+  }
+
+  function productosSinMovimientoReciente(diasLimite) {
+    var limite = Date.now() - diasLimite * 24 * 60 * 60 * 1000;
+    var ultimaRetirada = {};
+    state.movimientos.forEach(function (m) {
+      if (m.tipo !== 'retirar') return;
+      var t = new Date(m.fecha).getTime();
+      if (!ultimaRetirada[m.itemId] || t > ultimaRetirada[m.itemId]) ultimaRetirada[m.itemId] = t;
+    });
+    return state.items.filter(function (item) {
+      var ultima = ultimaRetirada[item.id];
+      return !ultima || ultima < limite;
+    });
+  }
+
+  function renderEstadisticas() {
+    var retiradas = retiradasEnPeriodo();
+    var consumo = consumoPorProducto(retiradas);
+    var totalUnidades = consumo.reduce(function (s, c) { return s + c.total; }, 0);
+    var masUsado = consumo.length ? consumo[0] : null;
+    var sinMovimiento = productosSinMovimientoReciente(90);
+    var anios = aniosDisponibles();
+
+    var etiquetaPeriodo = state.statsPeriodo === 'mensual'
+      ? MESES[state.statsMes - 1] + ' de ' + state.statsAnio
+      : 'año ' + state.statsAnio;
+
+    var toolbar =
+      '<section class="stats-toolbar no-print">' +
+      '<div class="period-toggle">' +
+      '<button class="period-toggle-btn' + (state.statsPeriodo === 'mensual' ? ' active' : '') + '" onclick="App.setStatsPeriodo(\'mensual\')">Mensual</button>' +
+      '<button class="period-toggle-btn' + (state.statsPeriodo === 'anual' ? ' active' : '') + '" onclick="App.setStatsPeriodo(\'anual\')">Anual</button>' +
+      '</div>' +
+      (state.statsPeriodo === 'mensual'
+        ? '<select onchange="App.setStatsMes(this.value)">' + MESES.map(function (m, i) {
+            return '<option value="' + (i + 1) + '"' + (i + 1 === state.statsMes ? ' selected' : '') + '>' + m + '</option>';
+          }).join('') + '</select>'
+        : '') +
+      '<select onchange="App.setStatsAnio(this.value)">' + anios.map(function (a) {
+        return '<option value="' + a + '"' + (a === state.statsAnio ? ' selected' : '') + '>' + a + '</option>';
+      }).join('') + '</select>' +
+      '<button class="btn btn-secondary btn-small" onclick="App.exportarMovimientosExcel()">' + ICON_EXPORT + ' Exportar movimientos</button>' +
+      '</section>';
+
+    var resumen =
+      '<section class="summary-cards">' +
+      '<div class="summary-card"><span class="summary-value">' + totalUnidades + '</span><span class="summary-label">Unidades retiradas · ' + escapeHtml(etiquetaPeriodo) + '</span></div>' +
+      '<div class="summary-card"><span class="summary-value stat-name-value">' + (masUsado ? escapeHtml(masUsado.nombre) : '—') + '</span><span class="summary-label">Producto más usado</span></div>' +
+      '<div class="summary-card"><span class="summary-value">' + consumo.length + '</span><span class="summary-label">Productos con movimiento</span></div>' +
+      '<div class="summary-card tone-warning"><span class="summary-value">' + sinMovimiento.length + '</span><span class="summary-label">Sin movimiento en 90 días</span></div>' +
+      '</section>';
+
+    var filasConsumo = consumo.length === 0
+      ? '<p class="empty-state">No hay retiradas registradas en este periodo.</p>'
+      : consumo.map(function (c) {
+          var pct = totalUnidades > 0 ? Math.round((c.total / totalUnidades) * 100) : 0;
+          return (
+            '<div class="stat-row">' +
+            '<div class="stat-row-label">' + escapeHtml(c.nombre) + '</div>' +
+            '<div class="stat-row-bar-track"><div class="stat-row-bar-fill" style="width:' + pct + '%"></div></div>' +
+            '<div class="stat-row-value">' + c.total + ' uds · ' + pct + '%</div>' +
+            '</div>'
+          );
+        }).join('');
+
+    var panelConsumo =
+      '<div class="stats-panel">' +
+      '<h3>Consumo por producto</h3>' +
+      filasConsumo +
+      '</div>';
+
+    var panelTendencia = '';
+    if (state.statsPeriodo === 'anual') {
+      var totales = tendenciaMensual();
+      var max = Math.max.apply(null, totales.concat([1]));
+      var barras = totales.map(function (t, i) {
+        var alturaPct = Math.round((t / max) * 100);
+        return (
+          '<div class="trend-col">' +
+          '<div class="trend-bar-track">' +
+          (t > 0 ? '<span class="trend-bar-value">' + t + '</span>' : '') +
+          '<div class="trend-bar-fill" style="height:' + Math.max(alturaPct, t > 0 ? 4 : 0) + '%"></div>' +
+          '</div>' +
+          '<span class="trend-label">' + MESES[i].slice(0, 3) + '</span>' +
+          '</div>'
+        );
+      }).join('');
+      panelTendencia =
+        '<div class="stats-panel">' +
+        '<h3>Tendencia mensual · ' + state.statsAnio + '</h3>' +
+        '<div class="trend-chart">' + barras + '</div>' +
+        '</div>';
+    }
+
+    var filasSinMovimiento = sinMovimiento.length === 0
+      ? '<p class="empty-state">Todos los productos han tenido movimiento reciente.</p>'
+      : '<ul class="stale-list">' + sinMovimiento.map(function (item) {
+          return '<li><span>' + escapeHtml(item.nombre) + '</span><span class="cell-subtitle">' + item.stock + ' ' + escapeHtml(item.unidad) + '</span></li>';
+        }).join('') + '</ul>';
+
+    var panelSinMovimiento =
+      '<div class="stats-panel">' +
+      '<h3>Sin movimiento en los últimos 90 días</h3>' +
+      '<p class="stats-panel-hint">Llevan tres meses o más sin retirarse — revisa si siguen siendo necesarios antes de que caduquen sin usarse.</p>' +
+      filasSinMovimiento +
+      '</div>';
+
+    return (
+      toolbar +
+      resumen +
+      '<div class="stats-grid' + (panelTendencia ? ' stats-grid-2col' : '') + '">' + panelConsumo + panelTendencia + '</div>' +
+      panelSinMovimiento
+    );
+  }
+
   function campoTexto(id, label, valor, tipo, extra) {
     tipo = tipo || 'text';
     return (
@@ -1356,15 +1765,17 @@
 
     var sala = SALAS[state.sala];
     var fechaImpresion = new Date().toLocaleString('es-ES');
+    var enInventario = state.vista === 'inventario';
+    var tituloImpresion = enInventario ? 'Inventario' : 'Estadísticas de consumo';
 
     root.innerHTML =
       renderHeader() +
       '<div class="shell">' +
-      '<div class="print-header"><h1>Inventario · ' + escapeHtml(sala.nombre) + '</h1><p>ArcelorMittal · Servicios Médicos · Generado el ' + fechaImpresion + '</p></div>' +
+      '<div class="print-header"><h1>' + tituloImpresion + ' · ' + escapeHtml(sala.nombre) + '</h1><p>Servicios Médicos Gijón · Generado el ' + fechaImpresion + '</p></div>' +
       (storageDisponible ? '' : '<div class="storage-warning">El navegador no permite guardar datos de forma persistente (modo privado o almacenamiento bloqueado). Los cambios se perderán al cerrar esta pestaña.</div>') +
-      renderResumen() +
-      renderToolbar() +
-      renderTabla() +
+      (enInventario
+        ? renderResumen() + renderToolbar() + renderTabla()
+        : renderEstadisticas()) +
       '</div>' +
       renderModal();
   }
@@ -1377,24 +1788,42 @@
       if (!sala) return;
       state.sala = salaId;
       state.items = cargarItems(sala);
+      state.movimientos = cargarMovimientos(sala);
+      state.vista = 'inventario';
       state.busqueda = '';
       state.filtroCategoria = 'todas';
       state.filtroEstado = 'todos';
       state.modal = null;
+      var hoyReset = new Date();
+      state.statsPeriodo = 'mensual';
+      state.statsAnio = hoyReset.getFullYear();
+      state.statsMes = hoyReset.getMonth() + 1;
       render();
     },
     cambiarSala: function () {
       state.sala = null;
       state.items = [];
+      state.movimientos = [];
       state.modal = null;
       render();
     },
+    setVista: function (vista) { state.vista = vista; render(); },
+    setStatsPeriodo: function (periodo) { state.statsPeriodo = periodo; render(); },
+    setStatsAnio: function (anio) { state.statsAnio = Number(anio); render(); },
+    setStatsMes: function (mes) { state.statsMes = Number(mes); render(); },
 
     exportarExcel: function () {
       var sala = SALAS[state.sala];
       var csv = itemsToCSV(state.items);
       var fecha = new Date().toISOString().slice(0, 10);
       descargarArchivo('inventario-' + sala.id + '-' + fecha + '.csv', csv, 'text/csv;charset=utf-8');
+    },
+
+    exportarMovimientosExcel: function () {
+      var sala = SALAS[state.sala];
+      var csv = movimientosToCSV(state.movimientos);
+      var fecha = new Date().toISOString().slice(0, 10);
+      descargarArchivo('movimientos-' + sala.id + '-' + fecha + '.csv', csv, 'text/csv;charset=utf-8');
     },
 
     exportarPDF: function () {
